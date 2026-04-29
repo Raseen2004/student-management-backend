@@ -1,7 +1,10 @@
-package dev.raseen.studentmanagement;
+package dev.raseen.studentmanagement.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import dev.raseen.studentmanagement.entity.Student;
+import dev.raseen.studentmanagement.service.StudentService;
 
 import java.util.List;
 

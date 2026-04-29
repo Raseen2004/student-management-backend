@@ -1,7 +1,10 @@
-package dev.raseen.studentmanagement;
+package dev.raseen.studentmanagement.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import dev.raseen.studentmanagement.entity.Student;
+import dev.raseen.studentmanagement.repository.StudentRepository;
 
 import java.util.List;
 import java.util.Optional;

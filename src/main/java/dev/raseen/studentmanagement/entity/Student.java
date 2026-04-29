@@ -1,4 +1,4 @@
-package dev.raseen.studentmanagement;
+package dev.raseen.studentmanagement.entity;
 
 
 import jakarta.persistence.*;
