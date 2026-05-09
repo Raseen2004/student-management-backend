@@ -1,9 +1,9 @@
 spring.application.name=studentManagement
 
 spring.datasource.url=jdbc:mysql://localhost:3306/learning_springboot
-spring.datasource.username=root
-spring.datasource.password=
+spring.datasource.username=your_username
+spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 
-jwt.secret=mySuperSecretKeyThatIsAtLeast32Chars!
+jwt.secret=your-secret-key-with-at-least-32-characters

@@ -1,11 +1,13 @@
-package dev.raseen.studentmanagement;
+package dev.raseen.studentmanagement.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "students")
-
+@JsonPropertyOrder({"id", "name", "email", "course"})
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
