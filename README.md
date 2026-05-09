@@ -154,11 +154,11 @@ Authorization: Bearer <jwt-token>
 
 ### Configuration
 
-Update [application.properties](/C:/Users/acer/Documents/SpringBoot-Lerning/student-management-backend/src/main/resources/application.properties) with your local database settings:
+Update [application.properties](/src/main/resources/application.properties) with your local database settings:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/learning_springboot
-spring.datasource.username=root
+spring.datasource.url=jdbc:mysql://localhost:3306/your_DB_name
+spring.datasource.username=your_username
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
@@ -166,12 +166,12 @@ spring.jpa.show-sql=true
 jwt.secret=your-secret-key-with-at-least-32-characters
 ```
 
-For a clean setup after cloning, copy [application.properties.example](/C:/Users/acer/Documents/SpringBoot-Lerning/student-management-backend/src/main/resources/application.properties.example) to `src/main/resources/application.properties` and fill in your local values. The real `application.properties` is ignored by Git so personal credentials and secrets are not committed.
+For a clean setup after cloning, copy [application.properties.example](src/main/resources/application.properties.example) to `src/main/resources/application.properties` and fill in your local values. The real `application.properties` is ignored by Git so personal credentials and secrets are not committed.
 
 ### Create the Database
 
 ```sql
-CREATE DATABASE learning_springboot;
+CREATE DATABASE your_DB_name;
 ```
 
 ### Run the Application
