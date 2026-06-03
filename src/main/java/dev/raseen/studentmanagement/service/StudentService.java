@@ -1,6 +1,9 @@
 package dev.raseen.studentmanagement.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import dev.raseen.studentmanagement.entity.Student;
@@ -13,14 +16,15 @@ import java.util.Optional;
 public class StudentService {
 
     @Autowired
-    private  StudentRepository studentRepository;
+    private StudentRepository studentRepository;
 
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public Page<Student> getAllStudents(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return studentRepository.findAll(pageable);
     }
 
     public Optional<Student> getStudentById(Long id) {
@@ -34,7 +38,6 @@ public class StudentService {
     public List<Student> createStudents(List<Student> students) {
         return studentRepository.saveAll(students);
     }
-
 
     public void deleteStudent(Long id) {
         studentRepository.deleteById(id);

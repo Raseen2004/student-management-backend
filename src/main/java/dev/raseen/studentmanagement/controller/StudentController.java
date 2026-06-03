@@ -1,5 +1,6 @@
 package dev.raseen.studentmanagement.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,11 @@ public class StudentController {
     }
 
     @GetMapping
-    public List<Student> getAllStudents() {
-        return studentService.getAllStudents();
+    public Page<Student> getAllStudents(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size 
+    ) {
+        return studentService.getAllStudents(page, size);
     }
 
     @GetMapping("/{id}")
