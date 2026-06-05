@@ -21,17 +21,15 @@ public class StudentController {
 
     @GetMapping
     public Page<Student> getAllStudents(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size 
-    ) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return studentService.getAllStudents(page, size);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
-        return studentService.getStudentById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Student student = studentService.getStudentById(id);
+        return ResponseEntity.ok(student);
     }
 
     @PostMapping
@@ -43,7 +41,6 @@ public class StudentController {
     public List<Student> createStudents(@RequestBody List<Student> students) {
         return studentService.createStudents(students);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {

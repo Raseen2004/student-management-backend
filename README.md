@@ -1,75 +1,75 @@
 # Student Management Backend
 
-A Spring Boot REST API for managing student records with JWT-based authentication and role-aware access control foundations. This project demonstrates secure user registration and login, stateless request processing, and CRUD operations backed by MySQL and Spring Data JPA.
+A secure Spring Boot REST API for student record management with JWT-based authentication, MySQL persistence, and layered backend architecture. This project was built to practice real-world backend concepts including stateless authentication, request validation, centralized exception handling, and clean separation of controller, service, repository, and security responsibilities.
 
-## Highlights
+## Overview
 
-- JWT-based authentication for protected API access
-- BCrypt password hashing for secure credential storage
-- Student management REST endpoints for create, read, and delete operations
-- Batch student creation endpoint for efficient data entry
-- MySQL persistence with Spring Data JPA and Hibernate
-- Input validation using Jakarta Validation
-- Developer-friendly setup with Maven Wrapper and Spring Boot DevTools
+The application provides:
 
-## Technology Stack
+- User registration and login with JWT token generation
+- Protected student management APIs
+- Paginated student retrieval
+- Single and batch student creation
+- Student deletion by ID
+- Custom error handling for application and security responses
+
+This project is designed as a learning-focused backend, while still following patterns that are commonly expected in production-style Spring applications.
+
+## Tech Stack
 
 - Java 25
 - Spring Boot 4.0.6
+- Spring Web
 - Spring Security
 - Spring Data JPA
-- Spring Web MVC
 - Jakarta Validation
 - MySQL
-- JSON Web Token (`jjwt` 0.11.5)
+- JWT (`jjwt` 0.11.5)
 - Lombok
 - Maven
 
-## Project Structure
+## Architecture
 
-- `src/main/java/dev/raseen/studentmanagement/controller`:
-  REST controllers for authentication and student APIs
-- `src/main/java/dev/raseen/studentmanagement/service`:
-  business logic for authentication, user loading, and student management
-- `src/main/java/dev/raseen/studentmanagement/security`:
-  JWT utility and request filter logic
-- `src/main/java/dev/raseen/studentmanagement/repository`:
-  JPA repositories for users and students
-- `src/main/resources/application.properties`:
-  database and JWT configuration
+The codebase follows a layered structure:
 
-## Authentication Design
+- `controller`
+  Exposes REST endpoints and handles HTTP requests/responses.
+- `service`
+  Contains business logic for authentication and student operations.
+- `repository`
+  Provides data access using Spring Data JPA.
+- `entity`
+  Defines JPA-mapped domain models.
+- `security`
+  Contains JWT generation, token validation, request filtering, and security handlers.
+- `exception`
+  Centralizes error response handling for application-level exceptions.
 
-The backend includes a custom authentication flow built with Spring Security:
+## Key Features
 
-- `POST /auth/register` creates a new user account
-- passwords are stored using BCrypt hashing
-- `POST /auth/login` authenticates a username and password
-- successful login returns a JWT token
-- protected routes require a valid `Authorization: Bearer <token>` header
+### Authentication and Security
 
-Core authentication components:
+- User registration with duplicate-username protection
+- Login with Spring Security `AuthenticationManager`
+- BCrypt password hashing before persistence
+- JWT generation after successful login
+- Request filtering using a custom `JwtFilter`
+- Public authentication endpoints and protected student endpoints
+- Custom JSON responses for unauthorized and forbidden requests
 
-- `SecurityConfig`:
-  defines the security filter chain and public/protected routes
-- `AuthService`:
-  handles registration and login operations
-- `CustomUserDetailsService`:
-  loads user credentials from the database for Spring Security
-- `JwtUtil`:
-  generates and validates JWT tokens
-- `JwtFilter`:
-  inspects incoming bearer tokens before protected endpoints are processed
+### Student Management
 
-## Security Notes
+- Retrieve students with pagination support
+- Fetch a student by ID
+- Create a single student record
+- Create multiple students in one request
+- Delete a student by ID
 
-This project is resume-ready as a learning-focused backend that demonstrates practical authentication concepts. The current implementation includes JWT and BCrypt integration, and the codebase also highlights important security engineering considerations such as:
+### Error Handling
 
-- ensuring invalid or expired bearer tokens are handled gracefully in the filter chain
-- returning clear authentication failure responses for bad login attempts
-- configuring stateless security behavior explicitly for JWT-protected APIs
-
-These are the kinds of production-hardening concerns typically addressed as part of ongoing backend refinement.
+- Global exception handling using `@RestControllerAdvice`
+- Custom application error response model
+- Security-layer handling for `401 Unauthorized` and `403 Forbidden`
 
 ## API Endpoints
 
@@ -77,22 +77,22 @@ These are the kinds of production-hardening concerns typically addressed as part
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/auth/register` | Register a new user |
-| POST | `/auth/login` | Authenticate user and return JWT |
+| `POST` | `/auth/register` | Register a new user |
+| `POST` | `/auth/login` | Authenticate user and return a JWT token |
 
-### Student Management
+### Students
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/students` | Retrieve all students |
-| GET | `/api/students/{id}` | Retrieve a student by ID |
-| POST | `/api/students` | Create a new student |
-| POST | `/api/students/batch` | Create multiple students |
-| DELETE | `/api/students/{id}` | Delete a student by ID |
+| `GET` | `/api/students` | Retrieve all students with pagination |
+| `GET` | `/api/students/{id}` | Retrieve a student by ID |
+| `POST` | `/api/students` | Create a new student |
+| `POST` | `/api/students/batch` | Create multiple students |
+| `DELETE` | `/api/students/{id}` | Delete a student by ID |
 
 ## Sample Requests
 
-### Register User
+### Register
 
 ```http
 POST /auth/register
@@ -101,13 +101,13 @@ Content-Type: application/json
 
 ```json
 {
-  "username": "Alice",
+  "username": "alice",
   "password": "password123",
   "role": "USER"
 }
 ```
 
-### Login User
+### Login
 
 ```http
 POST /auth/login
@@ -116,12 +116,28 @@ Content-Type: application/json
 
 ```json
 {
-  "username": "Alice",
+  "username": "alice",
   "password": "password123"
 }
 ```
 
-### Create Students in Batch
+### Create Student
+
+```http
+POST /api/students
+Content-Type: application/json
+Authorization: Bearer <jwt-token>
+```
+
+```json
+{
+  "name": "Aarav Sharma",
+  "email": "aarav.sharma@bishop.ac.in",
+  "course": "Computer Science"
+}
+```
+
+### Batch Create Students
 
 ```http
 POST /api/students/batch
@@ -144,20 +160,16 @@ Authorization: Bearer <jwt-token>
 ]
 ```
 
-## Getting Started
+## Configuration
 
-### Prerequisites
+Use [application.properties.example](C:/Users/acer/Documents/SpringBoot-Lerning/student-management-backend/src/main/resources/application.properties.example) as the base configuration and create your local `src/main/resources/application.properties`.
 
-- Java 25 or higher
-- MySQL Server
-- Maven installed, or use the included Maven Wrapper
-
-### Configuration
-
-Update [application.properties](/src/main/resources/application.properties) with your local database settings:
+Example:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/your_DB_name
+spring.application.name=studentManagement
+
+spring.datasource.url=jdbc:mysql://localhost:3306/learning_springboot
 spring.datasource.username=your_username
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
@@ -166,21 +178,23 @@ spring.jpa.show-sql=true
 jwt.secret=your-secret-key-with-at-least-32-characters
 ```
 
-For a clean setup after cloning, copy [application.properties.example](src/main/resources/application.properties.example) to `src/main/resources/application.properties` and fill in your local values. The real `application.properties` is ignored by Git so personal credentials and secrets are not committed.
+## Getting Started
 
-### Create the Database
+### Prerequisites
+
+- Java 25
+- MySQL Server
+- Maven, or use the included Maven Wrapper
+
+### Database Setup
+
+Create a database before running the application:
 
 ```sql
-CREATE DATABASE your_DB_name;
+CREATE DATABASE learning_springboot;
 ```
 
 ### Run the Application
-
-With Maven Wrapper:
-
-```bash
-./mvnw spring-boot:run
-```
 
 On Windows:
 
@@ -188,31 +202,49 @@ On Windows:
 .\mvnw.cmd spring-boot:run
 ```
 
-The API will be available at:
+On macOS/Linux:
+
+```bash
+./mvnw spring-boot:run
+```
+
+Application base URL:
 
 `http://localhost:8080`
 
-## Dependencies Referenced from pom.xml
+## Example Error Response
 
-This project currently uses the following major dependencies from [pom.xml](/C:/Users/acer/Documents/SpringBoot-Lerning/student-management-backend/pom.xml):
+Application and security errors are returned as structured JSON responses.
 
-- `spring-boot-starter-webmvc`
-- `spring-boot-starter-security`
-- `spring-boot-starter-data-jpa`
-- `spring-boot-starter-validation`
-- `spring-boot-starter-actuator`
-- `mysql-connector-j`
-- `jjwt-api`
-- `jjwt-impl`
-- `jjwt-jackson`
-- `lombok`
+```json
+{
+  "message": "Student not found with id: 9999",
+  "status": 404,
+  "timestamp": "2026-06-05T10:30:00"
+}
+```
 
-## Resume Value
+## What This Project Demonstrates
 
-This project demonstrates hands-on backend engineering skills in:
+This project highlights practical backend development skills relevant to entry-level and early-career Java backend roles:
 
-- designing RESTful APIs with Spring Boot
-- implementing JWT authentication and password hashing
-- integrating relational persistence with JPA and MySQL
-- structuring a layered backend architecture with controller, service, repository, and security packages
-- applying validation and secure request handling practices in a Java web application
+- Building REST APIs with Spring Boot
+- Implementing JWT-based authentication and stateless request security
+- Working with relational databases using JPA and Hibernate
+- Structuring a backend with clear separation of concerns
+- Applying validation and exception handling for cleaner API behavior
+- Securing user credentials with BCrypt password hashing
+
+## Future Improvements
+
+Planned or natural next steps for extending this project include:
+
+- Update and partial update endpoints for students
+- Role-based authorization rules for admin-only operations
+- Swagger/OpenAPI documentation
+- Unit and integration tests for controllers and services
+- Docker-based local development setup
+
+## Author
+
+Built as a hands-on Spring Boot backend project for strengthening Java, Spring Security, REST API, and database integration skills.
