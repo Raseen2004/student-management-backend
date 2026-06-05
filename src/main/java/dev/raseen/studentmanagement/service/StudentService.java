@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import dev.raseen.studentmanagement.entity.Student;
+import dev.raseen.studentmanagement.exception.StudentNotFoundException;
 import dev.raseen.studentmanagement.repository.StudentRepository;
 
 import java.util.List;
@@ -27,8 +28,9 @@ public class StudentService {
         return studentRepository.findAll(pageable);
     }
 
-    public Optional<Student> getStudentById(Long id) {
-        return studentRepository.findById(id);
+    public Student getStudentById(Long id) {
+        return studentRepository.findById(id)
+        .orElseThrow(() -> new StudentNotFoundException("Student not fount with id "+ id));
     }
 
     public Student createStudent(Student student) {
@@ -40,6 +42,9 @@ public class StudentService {
     }
 
     public void deleteStudent(Long id) {
+        if(!studentRepository.existsById(id)) {
+            throw new StudentNotFoundException("Student not fount with id "+ id);
+        }
         studentRepository.deleteById(id);
     }
 }
