@@ -1,6 +1,6 @@
 # Student Management Backend
 
-A secure Spring Boot REST API for student record management with JWT-based authentication, MySQL persistence, and layered backend architecture. This project was built to practice real-world backend concepts including stateless authentication, request validation, centralized exception handling, and clean separation of controller, service, repository, and security responsibilities.
+A secure Spring Boot REST API for student record management with JWT-based authentication, MySQL persistence, Redis-backed caching, and layered backend architecture. This project was built to practice real-world backend concepts including stateless authentication, request validation, caching, centralized exception handling, and clean separation of controller, service, repository, and security responsibilities.
 
 ## Overview
 
@@ -8,8 +8,10 @@ The application provides:
 
 - User registration and login with JWT token generation
 - Protected student management APIs
+- Redis caching for student retrieval
 - Paginated student retrieval
 - Single and batch student creation
+- Student update support
 - Student deletion by ID
 - Custom error handling for application and security responses
 
@@ -22,8 +24,10 @@ This project is designed as a learning-focused backend, while still following pa
 - Spring Web
 - Spring Security
 - Spring Data JPA
+- Spring Data Redis
 - Jakarta Validation
 - MySQL
+- Redis
 - JWT (`jjwt` 0.11.5)
 - Lombok
 - Maven
@@ -59,11 +63,20 @@ The codebase follows a layered structure:
 
 ### Student Management
 
+- Retrieve students using Redis-backed caching with pagination support
 - Retrieve students with pagination support
 - Fetch a student by ID
 - Create a single student record
 - Create multiple students in one request
+- Partially update an existing student
 - Delete a student by ID
+
+### Caching
+
+- Redis cache integration using Spring Cache abstraction
+- Cached student list retrieval to reduce repeated database reads
+- Cached student-by-ID lookup for frequently accessed records
+- Time-to-live configuration for cache entries
 
 ### Error Handling
 
@@ -88,6 +101,7 @@ The codebase follows a layered structure:
 | `GET` | `/api/students/{id}` | Retrieve a student by ID |
 | `POST` | `/api/students` | Create a new student |
 | `POST` | `/api/students/batch` | Create multiple students |
+| `PATCH` | `/api/students/{id}` | Partially update a student |
 | `DELETE` | `/api/students/{id}` | Delete a student by ID |
 
 ## Sample Requests
@@ -160,6 +174,21 @@ Authorization: Bearer <jwt-token>
 ]
 ```
 
+### Update Student
+
+```http
+PATCH /api/students/1
+Content-Type: application/json
+Authorization: Bearer <jwt-token>
+```
+
+```json
+{
+  "name": "Aarav Sharma",
+  "email": "aarav.sharma.updated@bishop.ac.in"
+}
+```
+
 ## Configuration
 
 Use [application.properties.example](C:/Users/acer/Documents/SpringBoot-Lerning/student-management-backend/src/main/resources/application.properties.example) as the base configuration and create your local `src/main/resources/application.properties`.
@@ -176,6 +205,10 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 
 jwt.secret=your-secret-key-with-at-least-32-characters
+
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+spring.cache.type=redis
 ```
 
 ## Getting Started
@@ -184,6 +217,7 @@ jwt.secret=your-secret-key-with-at-least-32-characters
 
 - Java 25
 - MySQL Server
+- Redis Server
 - Maven, or use the included Maven Wrapper
 
 ### Database Setup
@@ -212,6 +246,10 @@ Application base URL:
 
 `http://localhost:8080`
 
+Redis default URL:
+
+`localhost:6379`
+
 ## Example Error Response
 
 Application and security errors are returned as structured JSON responses.
@@ -231,6 +269,7 @@ This project highlights practical backend development skills relevant to entry-l
 - Building REST APIs with Spring Boot
 - Implementing JWT-based authentication and stateless request security
 - Working with relational databases using JPA and Hibernate
+- Integrating Redis caching to improve repeated read performance
 - Structuring a backend with clear separation of concerns
 - Applying validation and exception handling for cleaner API behavior
 - Securing user credentials with BCrypt password hashing
@@ -239,10 +278,10 @@ This project highlights practical backend development skills relevant to entry-l
 
 Planned or natural next steps for extending this project include:
 
-- Update and partial update endpoints for students
 - Role-based authorization rules for admin-only operations
 - Swagger/OpenAPI documentation
 - Unit and integration tests for controllers and services
+- Docker Compose setup for MySQL and Redis
 - Docker-based local development setup
 
 ## Author
