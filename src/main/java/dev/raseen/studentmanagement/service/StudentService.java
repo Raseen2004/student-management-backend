@@ -13,16 +13,21 @@ import org.springframework.stereotype.Service;
 import dev.raseen.studentmanagement.entity.Student;
 import dev.raseen.studentmanagement.exception.StudentNotFoundException;
 import dev.raseen.studentmanagement.repository.StudentRepository;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class StudentService {
 
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
 
-    public StudentService(StudentRepository studentRepository) {
+    private final EmailService emailService;
+
+    public StudentService(StudentRepository studentRepository, EmailService emailService) {
         this.studentRepository = studentRepository;
+        this.emailService = emailService;
     }
 
     @Cacheable("allStudents")
@@ -51,19 +56,47 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException("Student not fount with id " + id));
     }
 
-    @CacheEvict(value = { "studentsPage" }, allEntries = true)
+    @CacheEvict(value = { "allStudents", "studentsPage" }, allEntries = true)
     public Student createStudent(Student student) {
-        return studentRepository.save(student);
+        Student savedStudent = studentRepository.save(student);
+        try {
+            emailService.sendStudentWelcomeEmail(
+                    savedStudent.getEmail(),
+                    savedStudent.getName(),
+                    savedStudent.getCourse());
+        } catch (Exception e) {
+            log.error("Failed to send welcome email", e);
+        }
+
+        return savedStudent;
     }
 
-    @CacheEvict(value = { "studentsPage" }, allEntries = true)
+    @CacheEvict(value = { "allStudents", "studentsPage" }, allEntries = true)
     public List<Student> createStudents(List<Student> students) {
-        return studentRepository.saveAll(students);
+        List<Student> savedStudents = studentRepository.saveAll(students);
+
+        savedStudents.forEach(student -> {
+            try {
+                emailService.sendStudentWelcomeEmail(
+                        student.getEmail(),
+                        student.getName(),
+                        student.getCourse());
+                Thread.sleep(1000); //handling to mailtrap basic plan
+            } catch (Exception e) {
+                log.error(
+                        "Failed to send email to {}",
+                        student.getEmail(),
+                        e);
+            }
+        });
+
+        return savedStudents;
     }
 
     @Caching(put = {
             @CachePut(value = "studentById", key = "#result.id")
     }, evict = {
+            @CacheEvict(value = "allStudents", allEntries = true),
             @CacheEvict(value = "studentsPage", allEntries = true)
     })
     public Student updateStudent(Long id, Student student) {
@@ -83,6 +116,7 @@ public class StudentService {
 
     @Caching(evict = {
             @CacheEvict(value = "studentById", key = "#id"),
+            @CacheEvict(value = "allStudents", allEntries = true),
             @CacheEvict(value = "studentsPage", allEntries = true)
     })
     public void deleteStudent(Long id) {
