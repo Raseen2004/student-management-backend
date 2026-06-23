@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #777;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <div class="header">
+            Student Registration Successful
+        </div>
+
+        <p>
+            Hello <strong th:text="${name}"></strong>,
+        </p>
+
+        <p>
+            Your profile has been successfully created.
+        </p>
+
+        <p>
+            Course:
+            <strong th:text="${course}"></strong>
+        </p>
+
+        <p>
+            Welcome to the Student Management System.
+        </p>
+
+        <div class="footer">
+            This is an automated email.
+        </div>
+
+    </div>
+
+</body>
+
+</html>
